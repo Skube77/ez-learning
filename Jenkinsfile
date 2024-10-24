@@ -22,11 +22,6 @@ pipeline {
              sh "mvn validate"
             }
         }
-      stage('Clean and Build') {
-            steps {
-                sh 'mvn clean install -U'
-            }
-        }
         stage('Build') {
             steps {
                 // Run Maven build
