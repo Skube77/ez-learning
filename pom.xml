@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
+        <version>2.5.6</version> <!-- Updated Spring Boot version -->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -17,8 +17,7 @@
     <description>Ez learning platform</description>
 
     <properties>
-        <!-- Update java.version to match your JDK version -->
-        <java.version>17</java.version>
+        <java.version>17</java.version> <!-- Ensuring JDK 17 is used -->
     </properties>
 
     <dependencies>
@@ -46,15 +45,15 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok (Ensure it is compatible with JDK 17) -->
+        <!-- Lombok (compatible with JDK 17) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version> <!-- Update to the latest version -->
+            <version>1.18.28</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Data JPA -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -105,7 +104,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.6</version>
+                <version>3.8.6</version> <!-- Ensure this is a newer version -->
                 <configuration>
                     <source>17</source>   <!-- Set source to JDK 17 -->
                     <target>17</target>   <!-- Set target to JDK 17 -->
