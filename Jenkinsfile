@@ -22,16 +22,18 @@ pipeline {
 
         stage('Validate') {
             steps {
-                // Echo the JAVA_HOME and verify Java installation
-                sh 'echo $JAVA_HOME'
+                // Echo JAVA_HOME for debugging
+                sh 'echo JAVA_HOME is: $JAVA_HOME'
                 sh 'java -version'
-                sh "mvn validate -e"
+
+                // Force Maven to use the correct JAVA_HOME
+                sh "JAVA_HOME=${env.JAVA_HOME} mvn validate -e"
             }
         }
 
         stage('Build') {
             steps {
-                sh "mvn clean package -DskipTests -e"  // Build the project
+                sh "JAVA_HOME=${env.JAVA_HOME} mvn clean package -DskipTests -e"
             }
         }
     }
