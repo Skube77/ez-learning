@@ -7,10 +7,10 @@ pipeline {
     }
 
     environment {
-        // Ensure JAVA_HOME is set to the Jenkins JDK installation
+        // Set JAVA_HOME using the Jenkins tool installation and explicitly add it to the PATH
         JAVA_HOME = tool name: 'jdk17', type: 'hudson.model.JDK'
-        MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository"
         PATH = "${JAVA_HOME}/bin:${PATH}"  // Add JAVA_HOME to the PATH
+        MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository"
     }
 
     stages {
@@ -22,7 +22,10 @@ pipeline {
 
         stage('Validate') {
             steps {
-                sh "mvn validate -e"  // Run Maven validate
+                // Echo the JAVA_HOME and verify Java installation
+                sh 'echo $JAVA_HOME'
+                sh 'java -version'
+                sh "mvn validate -e"
             }
         }
 
