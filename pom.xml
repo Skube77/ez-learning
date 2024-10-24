@@ -104,7 +104,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.6</version> <!-- Ensure this is a newer version -->
+                <version>3.8.1</version> <!-- Ensure this is a newer version -->
                 <configuration>
                     <source>17</source>   <!-- Set source to JDK 17 -->
                     <target>17</target>   <!-- Set target to JDK 17 -->
