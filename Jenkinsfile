@@ -2,6 +2,7 @@ pipeline {
     agent any
    tools {
         maven 'aaaa'  // Specify the Maven tool by its name ('mdf')
+        JDK 'ddd'
     }
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository"  // Set the local Maven repository path to the Jenkins workspace
