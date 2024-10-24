@@ -1,12 +1,15 @@
 pipeline {
     agent any
-   tools {
-        maven 'aaaa'  // Specify the Maven tool by its name ('mdf')
-        jdk 'ddd'
+
+    tools {
+        maven 'maven-3.8.6'  // Use the same Maven version as in the Dockerfile
+        jdk 'jdk17'          // Use JDK 17 as specified in the Dockerfile
     }
+
     environment {
-        MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository"  // Set the local Maven repository path to the Jenkins workspace
+        MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository"  // Set the local Maven repository path
     }
+
     stages {
         stage('Permissions') {
             steps {
@@ -20,7 +23,7 @@ pipeline {
             }
         }
 
-      stage('Build'){
+        stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
