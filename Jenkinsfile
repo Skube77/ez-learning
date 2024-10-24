@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven-3.8.6'  // Use the same Maven version as in the Dockerfile
+        maven 'aaaa' // Use the same Maven version as in the Dockerfile
         jdk 'jdk17'          // Use JDK 17 as specified in the Dockerfile
     }
 
