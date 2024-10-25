@@ -20,7 +20,7 @@ pipeline {
     stages {
         stage('Permissions') {
             steps {
-                sh 'chmod 775 Dockerfile Jenkinsfile LICENSE README.md doc mvnw mvnw.cmd pom.xml src target'
+                sh 'chmod 775 Dockerfile Jenkinsfile LICENSE README.md doc mvnw mvnw.cmd pom.xml src'
             }
         }
 
