@@ -9,7 +9,12 @@ pipeline {
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
-        SONAR_LOGIN = credentials('sonar-token')  // Reference to the SonarQube token
+        SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
+        NEXUS_URL = 'http://nexus-url/repository/maven-releases/'  // Replace with your Nexus URL
+        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Credentials ID created in Jenkins for Nexus
+        GROUP_ID = 'com.ezlearning'
+        ARTIFACT_ID = 'platform'
+        VERSION = '0.0.1-SNAPSHOT'
     }
 
     stages {
@@ -49,15 +54,37 @@ pipeline {
                 sh "mvn clean package -DskipTests -e"
             }
         }
+
+        stage('Nexus Upload') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "$NEXUS_URL",
+                    groupId: "$GROUP_ID",
+                    version: "$VERSION",
+                    repository: 'maven-releases',
+                    credentialsId: "$NEXUS_CREDENTIALS_ID",
+                    artifacts: [
+                        [artifactId: "$ARTIFACT_ID",
+                        classifier: '',
+                        file: "target/${ARTIFACT_ID}-${VERSION}.war",
+                        type: 'war']
+                    ]
+                )
+            }
+        }
     }
 
     post {
         always {
             script {
                 try {
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    timeout(time: 10, unit: 'MINUTES') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
                     }
                 } catch (e) {
                     echo "Quality gate check failed: ${e.message}"
