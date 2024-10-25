@@ -11,7 +11,7 @@ pipeline {
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         NEXUS_URL = 'nexus-pfe.apps-crc.testing'  // Base Nexus URL, ensure it has https
-        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Make sure the credentials ID matches the correct one
+        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Ensure credentials are correct
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
         VERSION = '0.0.1-SNAPSHOT'
@@ -64,6 +64,7 @@ pipeline {
 
         stage('Nexus Upload') {
             steps {
+                echo "Starting Nexus artifact upload..."
                 echo "Using credentials ID: $NEXUS_CREDENTIALS_ID"
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
@@ -73,7 +74,6 @@ pipeline {
                     version: "$VERSION",
                     repository: 'maven-snapshots',  // Push snapshots to the correct repository
                     credentialsId: "$NEXUS_CREDENTIALS_ID",
-                    skipPomGeneration: true,  // Skip generating metadata/pom.xml
                     artifacts: [
                         [artifactId: "$ARTIFACT_ID",
                         classifier: '',
