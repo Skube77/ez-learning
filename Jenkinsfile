@@ -10,7 +10,7 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'nexus-pfe.apps-crc.testing'  // Base Nexus URL, ensure it has https
+        NEXUS_URL = 'nexus-pfe.apps-crc.testing'  // Base Nexus URL with https
         NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Ensure credentials are correct
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
@@ -65,11 +65,11 @@ pipeline {
         stage('Debug Nexus Connection') {
             steps {
                 echo "Testing connection to Nexus URL: $NEXUS_URL"
-                sh 'curl -v $NEXUS_URL/repository/maven-snapshots/'
+                sh 'curl -v -u admin:admin123 $NEXUS_URL/repository/maven-snapshots/'
             }
         }
 
-        stage('Nexus Upload') {
+        stage('Ignore Metadata and Upload') {
             steps {
                 script {
                     echo "Starting Nexus artifact upload..."
@@ -83,6 +83,7 @@ pipeline {
                             version: "$VERSION",
                             repository: 'maven-snapshots',  // Push snapshots to the correct repository
                             credentialsId: "$NEXUS_CREDENTIALS_ID",
+                            ignoreFailOnEmptyDirectory: true,  // Ignore empty directory issue
                             artifacts: [
                                 [artifactId: "$ARTIFACT_ID",
                                 classifier: '',
@@ -92,7 +93,7 @@ pipeline {
                         )
                         echo "Artifact uploaded successfully to Nexus"
                     } catch (Exception e) {
-                        echo "Nexus upload failed with error: ${e}"
+                        echo "Nexus upload failed with error: ${e.message}"
                         error "Nexus artifact upload failed"
                     }
                 }
