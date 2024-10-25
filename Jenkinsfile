@@ -10,8 +10,8 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'http://nexus-url/repository/maven-releases/'  // Replace with your Nexus URL
-        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Credentials ID created in Jenkins for Nexus
+        NEXUS_URL = 'https://nexus-pfe.apps-crc.testing/repository/maven-releases/'  // Nexus repository URL
+        NEXUS_CREDENTIALS_ID = 'nexus-admin-creds'  // The credentials ID you added in Jenkins for Nexus
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
         VERSION = '0.0.1-SNAPSHOT'
@@ -33,6 +33,13 @@ pipeline {
         stage('Clean and Build') {
             steps {
                 sh 'mvn clean install'
+            }
+        }
+
+        stage('List Target Directory') {
+            steps {
+                // List the contents of the target directory to see if the .war file was generated
+                sh 'ls -l target/'
             }
         }
 
@@ -59,7 +66,7 @@ pipeline {
             steps {
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
-                    protocol: 'http',
+                    protocol: 'https',
                     nexusUrl: "$NEXUS_URL",
                     groupId: "$GROUP_ID",
                     version: "$VERSION",
