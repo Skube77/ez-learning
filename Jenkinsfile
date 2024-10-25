@@ -11,7 +11,7 @@ pipeline {
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         NEXUS_URL = 'https://nexus-pfe.apps-crc.testing/repository/maven-releases/'  // Nexus repository URL
-        NEXUS_CREDENTIALS_ID = 'nexus-admin-creds'  // The credentials ID you added in Jenkins for Nexus
+        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // The credentials ID you added in Jenkins for Nexus
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
         VERSION = '0.0.1-SNAPSHOT'
