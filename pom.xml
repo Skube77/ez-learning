@@ -106,6 +106,18 @@
         </dependency>
     </dependencies>
 
+    <!-- Added Distribution Management Section -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>https://nexus-pfe.apps-crc.testing/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://nexus-pfe.apps-crc.testing/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <!-- Spring Boot Maven Plugin -->
