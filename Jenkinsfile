@@ -10,7 +10,7 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'nexus-pfe.apps-crc.testing'  // Base Nexus URL, ensure it has https
+        NEXUS_URL = 'https://nexus-pfe.apps-crc.testing'  // Base Nexus URL, ensure it has https
         NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Ensure credentials are correct
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
@@ -71,28 +71,30 @@ pipeline {
 
         stage('Nexus Upload') {
             steps {
-                echo "Starting Nexus artifact upload..."
-                echo "Using credentials ID: $NEXUS_CREDENTIALS_ID"
-                try {
-                    nexusArtifactUploader(
-                        nexusVersion: 'nexus3',
-                        protocol: 'https',
-                        nexusUrl: "$NEXUS_URL",  // Use base URL only
-                        groupId: "$GROUP_ID",
-                        version: "$VERSION",
-                        repository: 'maven-snapshots',  // Push snapshots to the correct repository
-                        credentialsId: "$NEXUS_CREDENTIALS_ID",
-                        artifacts: [
-                            [artifactId: "$ARTIFACT_ID",
-                            classifier: '',
-                            file: "target/${ARTIFACT_ID}-${VERSION}.jar",  // Upload the .jar file
-                            type: 'jar']
-                        ]
-                    )
-                    echo "Artifact uploaded successfully to Nexus"
-                } catch (Exception e) {
-                    echo "Nexus upload failed with error: ${e}"
-                    error "Nexus artifact upload failed"
+                script {
+                    echo "Starting Nexus artifact upload..."
+                    echo "Using credentials ID: $NEXUS_CREDENTIALS_ID"
+                    try {
+                        nexusArtifactUploader(
+                            nexusVersion: 'nexus3',
+                            protocol: 'https',
+                            nexusUrl: "$NEXUS_URL",  // Use base URL only
+                            groupId: "$GROUP_ID",
+                            version: "$VERSION",
+                            repository: 'maven-snapshots',  // Push snapshots to the correct repository
+                            credentialsId: "$NEXUS_CREDENTIALS_ID",
+                            artifacts: [
+                                [artifactId: "$ARTIFACT_ID",
+                                classifier: '',
+                                file: "target/${ARTIFACT_ID}-${VERSION}.jar",  // Upload the .jar file
+                                type: 'jar']
+                            ]
+                        )
+                        echo "Artifact uploaded successfully to Nexus"
+                    } catch (Exception e) {
+                        echo "Nexus upload failed with error: ${e}"
+                        error "Nexus artifact upload failed"
+                    }
                 }
             }
         }
