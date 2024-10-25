@@ -10,7 +10,7 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'https://nexus-pfe.apps-crc.testing/repository/maven-releases/'  // Full Nexus repository URL
+        NEXUS_URL = 'nexus-pfe.apps-crc.testing/repository/maven-releases/'  // Full Nexus repository URL
         NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Make sure the credentials ID matches the correct one
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
