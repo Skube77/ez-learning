@@ -10,11 +10,7 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'nexus-pfe.apps-crc.testing'  // Base Nexus URL with https
-        NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Ensure credentials are correct
-        GROUP_ID = 'com.ezlearning'
-        ARTIFACT_ID = 'platform'
-        VERSION = '0.0.1-SNAPSHOT'
+        MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
     }
 
     stages {
@@ -62,41 +58,9 @@ pipeline {
             }
         }
 
-        stage('Debug Nexus Connection') {
+        stage('Deploy to Nexus') {
             steps {
-                echo "Testing connection to Nexus URL: $NEXUS_URL"
-                sh 'curl -v -u admin:admin123 $NEXUS_URL/repository/maven-snapshots/'
-            }
-        }
-
-        stage('Ignore Metadata and Upload') {
-            steps {
-                script {
-                    echo "Starting Nexus artifact upload..."
-                    echo "Using credentials ID: $NEXUS_CREDENTIALS_ID"
-                    try {
-                        nexusArtifactUploader(
-                            nexusVersion: 'nexus3',
-                            protocol: 'https',
-                            nexusUrl: "$NEXUS_URL",  // Use base URL only
-                            groupId: "$GROUP_ID",
-                            version: "$VERSION",
-                            repository: 'maven-snapshots',  // Push snapshots to the correct repository
-                            credentialsId: "$NEXUS_CREDENTIALS_ID",
-                            ignoreFailOnEmptyDirectory: true,  // Ignore empty directory issue
-                            artifacts: [
-                                [artifactId: "$ARTIFACT_ID",
-                                classifier: '',
-                                file: "target/${ARTIFACT_ID}-${VERSION}.jar",  // Upload the .jar file
-                                type: 'jar']
-                            ]
-                        )
-                        echo "Artifact uploaded successfully to Nexus"
-                    } catch (Exception e) {
-                        echo "Nexus upload failed with error: ${e.message}"
-                        error "Nexus artifact upload failed"
-                    }
-                }
+                sh "mvn deploy -s $MAVEN_SETTINGS"
             }
         }
     }
