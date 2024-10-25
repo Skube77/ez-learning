@@ -62,25 +62,38 @@ pipeline {
             }
         }
 
+        stage('Debug Nexus Connection') {
+            steps {
+                echo "Testing connection to Nexus URL: $NEXUS_URL"
+                sh 'curl -v $NEXUS_URL/repository/maven-snapshots/'
+            }
+        }
+
         stage('Nexus Upload') {
             steps {
                 echo "Starting Nexus artifact upload..."
                 echo "Using credentials ID: $NEXUS_CREDENTIALS_ID"
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'https',
-                    nexusUrl: "$NEXUS_URL",  // Use base URL only
-                    groupId: "$GROUP_ID",
-                    version: "$VERSION",
-                    repository: 'maven-snapshots',  // Push snapshots to the correct repository
-                    credentialsId: "$NEXUS_CREDENTIALS_ID",
-                    artifacts: [
-                        [artifactId: "$ARTIFACT_ID",
-                        classifier: '',
-                        file: "target/${ARTIFACT_ID}-${VERSION}.jar",  // Upload the .jar file
-                        type: 'jar']
-                    ]
-                )
+                try {
+                    nexusArtifactUploader(
+                        nexusVersion: 'nexus3',
+                        protocol: 'https',
+                        nexusUrl: "$NEXUS_URL",  // Use base URL only
+                        groupId: "$GROUP_ID",
+                        version: "$VERSION",
+                        repository: 'maven-snapshots',  // Push snapshots to the correct repository
+                        credentialsId: "$NEXUS_CREDENTIALS_ID",
+                        artifacts: [
+                            [artifactId: "$ARTIFACT_ID",
+                            classifier: '',
+                            file: "target/${ARTIFACT_ID}-${VERSION}.jar",  // Upload the .jar file
+                            type: 'jar']
+                        ]
+                    )
+                    echo "Artifact uploaded successfully to Nexus"
+                } catch (Exception e) {
+                    echo "Nexus upload failed with error: ${e}"
+                    error "Nexus artifact upload failed"
+                }
             }
         }
     }
