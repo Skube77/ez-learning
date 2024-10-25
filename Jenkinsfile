@@ -10,8 +10,7 @@ pipeline {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
-        NEXUS_URL = 'https://nexus-pfe.apps-crc.testing'  // Correct Nexus base URL without double "https://"
-        NEXUS_REPO_PATH = '/repository/maven-releases/'   // Define the repository path separately
+        NEXUS_URL = 'https://nexus-pfe.apps-crc.testing/repository/maven-releases/'  // Full Nexus repository URL
         NEXUS_CREDENTIALS_ID = 'nexus-credentials'  // Make sure the credentials ID matches the correct one
         GROUP_ID = 'com.ezlearning'
         ARTIFACT_ID = 'platform'
@@ -69,10 +68,10 @@ pipeline {
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
                     protocol: 'https',
-                    nexusUrl: "$NEXUS_URL",  // Correct base URL without double "https://"
-                    repository: "$NEXUS_REPO_PATH",  // Repository path separated
+                    nexusUrl: "$NEXUS_URL",  // Using the full Nexus URL without additional repository path
                     groupId: "$GROUP_ID",
                     version: "$VERSION",
+                    repository: 'maven-releases',  // Repository defined here
                     credentialsId: "$NEXUS_CREDENTIALS_ID",
                     artifacts: [
                         [artifactId: "$ARTIFACT_ID",
