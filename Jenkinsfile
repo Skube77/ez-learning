@@ -77,12 +77,12 @@ pipeline {
                   nexusVersion: 'nexus3',
                   protocol: 'http',
                   nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                  groupId: 'QA',
+                  groupId: 'learning',
                   version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
                   repository: "${RELEASE_REPO}",
                   credentialsId: "${NEXUS_LOGIN}",
                   artifacts: [
-                    [artifactId: 'vproapp',
+                    [artifactId: 'learning',
                      classifier: '',
                      file: 'target/platform-0.0.1-SNAPSHOT.jar',
                      type: 'war']
