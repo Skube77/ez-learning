@@ -84,7 +84,7 @@ pipeline {
                   artifacts: [
                     [artifactId: 'vproapp',
                      classifier: '',
-                     file: 'target/vprofile-v2.war',
+                     file: 'target/platform-0.0.1-SNAPSHOT.jar',
                      type: 'war']
                   ]
                 )
