@@ -110,11 +110,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>nexus-snapshots</id>
-            <url>https://nexus-pfe.apps-crc.testing/repository/maven-snapshots/</url>
+            <url>http://nexus-pfe.apps-crc.testing/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>nexus-releases</id>
-            <url>https://nexus-pfe.apps-crc.testing/repository/maven-releases/</url>
+            <url>http://nexus-pfe.apps-crc.testing/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
