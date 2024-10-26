@@ -13,8 +13,8 @@ pipeline {
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
 		NEXUS_PASS = 'admin123'
-		RELEASE_REPO = 'ezrelease'
-		CENTRAL_REPO = 'learning'
+		RELEASE_REPO = 'learning'
+		CENTRAL_REPO = 'ezrelease'
 		NEXUSIP = '10.217.1.34'
 		NEXUSPORT = '8081'
 		NEXUS_GRP_REPO = 'leargroupe'
