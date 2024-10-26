@@ -11,6 +11,15 @@ pipeline {
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
+        NEXUS_USER = 'admin'
+		NEXUS_PASS = 'admin123'
+		RELEASE_REPO = 'ezrelease'
+		CENTRAL_REPO = 'learning'
+		NEXUSIP = '10.217.1.34'
+		NEXUSPORT = '8081'
+		NEXUS_GRP_REPO = 'leargroupe'
+        NEXUS_LOGIN = 'nexus-credentials'
+        
     }
 
     stages {
@@ -58,11 +67,31 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
-            steps {
-                sh "mvn deploy -s $MAVEN_SETTINGS"
+
+
+
+
+        stage("UploadArtifact"){
+            steps{
+                nexusArtifactUploader(
+                  nexusVersion: 'nexus3',
+                  protocol: 'https',
+                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                  groupId: 'QA',
+                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                  repository: "${RELEASE_REPO}",
+                  credentialsId: "${NEXUS_LOGIN}",
+                  artifacts: [
+                    [artifactId: 'vproapp',
+                     classifier: '',
+                     file: 'target/vprofile-v2.war',
+                     type: 'war']
+                  ]
+                )
             }
         }
+
+
     }
 
     post {
