@@ -29,6 +29,21 @@ pipeline {
             }
         }
 
+        stage('Install Docker') {
+            steps {
+                sh '''
+                    if ! [ -x "$(command -v docker)" ]; then
+                        echo "Docker is not installed, installing now..."
+                        sudo apt-get update
+                        sudo apt-get install -y docker.io
+                    else
+                        echo "Docker is already installed"
+                    fi
+                    docker --version
+                '''
+            }
+        }
+
         stage('Validate') {
             steps {
                 sh "mvn validate"
@@ -67,12 +82,8 @@ pipeline {
             }
         }
 
-
-
-
-
-        stage("UploadArtifact"){
-            steps{
+        stage("UploadArtifact") {
+            steps {
                 nexusArtifactUploader(
                   nexusVersion: 'nexus3',
                   protocol: 'http',
@@ -90,8 +101,6 @@ pipeline {
                 )
             }
         }
-
-
     }
 
     post {
