@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any  // Default agent for all stages except the Docker build stage
 
     tools {
         jdk 'jdkaaa'         // JDK 17 installed via Jenkins
@@ -12,35 +12,19 @@ pipeline {
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
-		NEXUS_PASS = 'admin123'
-		RELEASE_REPO = 'learning'
-		CENTRAL_REPO = 'ezrelease'
-		NEXUSIP = '10.217.1.34'
-		NEXUSPORT = '8081'
-		NEXUS_GRP_REPO = 'leargroupe'
+        NEXUS_PASS = 'admin123'
+        RELEASE_REPO = 'learning'
+        CENTRAL_REPO = 'ezrelease'
+        NEXUSIP = '10.217.1.34'
+        NEXUSPORT = '8081'
+        NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
-        
     }
 
     stages {
         stage('Permissions') {
             steps {
                 sh 'chmod 775 Dockerfile Jenkinsfile LICENSE README.md doc mvnw mvnw.cmd pom.xml src'
-            }
-        }
-
-        stage('Install Docker') {
-            steps {
-                sh '''
-                    if ! [ -x "$(command -v docker)" ]; then
-                        echo "Docker is not installed, installing now..."
-                        sudo apt-get update
-                        sudo apt-get install -y docker.io
-                    else
-                        echo "Docker is already installed"
-                    fi
-                    docker --version
-                '''
             }
         }
 
@@ -63,6 +47,24 @@ pipeline {
             }
         }
 
+        // Use Docker agent only in this stage
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    image 'docker:19.03.12'  // Docker image with Docker installed
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'  // Mount Docker socket
+                }
+            }
+            steps {
+                script {
+                    // Build Docker image from the Dockerfile in the project directory
+                    sh '''
+                        docker build -t my-app-image:$BUILD_ID .
+                    '''
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQubePFE') {
@@ -82,7 +84,7 @@ pipeline {
             }
         }
 
-        stage("UploadArtifact") {
+        stage('UploadArtifact') {
             steps {
                 nexusArtifactUploader(
                   nexusVersion: 'nexus3',
