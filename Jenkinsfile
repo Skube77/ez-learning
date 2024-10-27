@@ -72,7 +72,8 @@ pipeline {
             steps {
                 script {
                     // Build Docker image using the defined Docker registry and image name
-                    def dockerImage = docker.build("$DOCKER_IMAGE_NAME:${env.BUILD_ID}")
+                    // def dockerImage = docker.build("$DOCKER_IMAGE_NAME:${env.BUILD_ID}")
+                    docker build -t acilmajed/elearningapp:lts .
                 }
             }
         }
