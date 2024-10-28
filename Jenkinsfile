@@ -12,15 +12,14 @@ pipeline {
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
-        NEXUS_PASS = 'admin123'
-        RELEASE_REPO = 'learning'
-        CENTRAL_REPO = 'ezrelease'
-        NEXUSIP = '10.217.1.34'
-        NEXUSPORT = '8081'
-        NEXUS_GRP_REPO = 'leargroupe'
+		NEXUS_PASS = 'admin123'
+		RELEASE_REPO = 'learning'
+		CENTRAL_REPO = 'ezrelease'
+		NEXUSIP = '10.217.1.34'
+		NEXUSPORT = '8081'
+		NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
-        DOCKER_REGISTRY = 'index.docker.io/v1/'  // Docker Hub Registry URL
-        DOCKER_IMAGE_NAME = 'acilmajed/my-app-image'  // Docker Hub image name
+        
     }
 
     stages {
@@ -68,46 +67,31 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build Docker image using the defined Docker registry and image name
-                    // def dockerImage = docker.build("$DOCKER_IMAGE_NAME:${env.BUILD_ID}")
-                    sh 'docker build -t acilmajed/elearningapp:lts .'
-                }
-            }
-        }
 
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    // Login to Docker Hub using the stored Jenkins credentials (dockerhub-credentials)
-                    docker.withRegistry("https://$DOCKER_REGISTRY", 'dockerhub-credentials') {
-                        dockerImage.push("${env.BUILD_ID}")
-                    }
-                }
-            }
-        }
 
-        stage("UploadArtifact") {
-            steps {
+
+
+        stage("UploadArtifact"){
+            steps{
                 nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                    groupId: 'learning',
-                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                    repository: "${RELEASE_REPO}",
-                    credentialsId: "${NEXUS_LOGIN}",
-                    artifacts: [
-                        [artifactId: 'learning',
-                         classifier: '',
-                         file: 'target/platform-0.0.1-SNAPSHOT.jar',
-                         type: 'war']
-                    ]
+                  nexusVersion: 'nexus3',
+                  protocol: 'http',
+                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                  groupId: 'learning',
+                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                  repository: "${RELEASE_REPO}",
+                  credentialsId: "${NEXUS_LOGIN}",
+                  artifacts: [
+                    [artifactId: 'learning',
+                     classifier: '',
+                     file: 'target/platform-0.0.1-SNAPSHOT.jar',
+                     type: 'war']
+                  ]
                 )
             }
         }
+
+
     }
 
     post {
