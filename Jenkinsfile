@@ -12,17 +12,23 @@ pipeline {
         SONAR_LOGIN = credentials('sonar-token')  // SonarQube token
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
-		NEXUS_PASS = 'admin123'
-		RELEASE_REPO = 'learning'
-		CENTRAL_REPO = 'ezrelease'
-		NEXUSIP = '10.217.1.34'
-		NEXUSPORT = '8081'
-		NEXUS_GRP_REPO = 'leargroupe'
+        NEXUS_PASS = 'admin123'
+        RELEASE_REPO = 'learning'
+        CENTRAL_REPO = 'ezrelease'
+        NEXUSIP = '10.217.1.34'
+        NEXUSPORT = '8081'
+        NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
-        
     }
 
     stages {
+        // Add the Git checkout stage here
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Permissions') {
             steps {
                 sh 'chmod 775 Dockerfile Jenkinsfile LICENSE README.md doc mvnw mvnw.cmd pom.xml src'
@@ -67,31 +73,25 @@ pipeline {
             }
         }
 
-
-
-
-
-        stage("UploadArtifact"){
-            steps{
+        stage("UploadArtifact") {
+            steps {
                 nexusArtifactUploader(
-                  nexusVersion: 'nexus3',
-                  protocol: 'http',
-                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                  groupId: 'learning',
-                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                  repository: "${RELEASE_REPO}",
-                  credentialsId: "${NEXUS_LOGIN}",
-                  artifacts: [
-                    [artifactId: 'learning',
-                     classifier: '',
-                     file: 'target/platform-0.0.1-SNAPSHOT.jar',
-                     type: 'war']
-                  ]
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                    groupId: 'learning',
+                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                    repository: "${RELEASE_REPO}",
+                    credentialsId: "${NEXUS_LOGIN}",
+                    artifacts: [
+                        [artifactId: 'learning',
+                         classifier: '',
+                         file: 'target/platform-0.0.1-SNAPSHOT.jar',
+                         type: 'war']
+                    ]
                 )
             }
         }
-
-
     }
 
     post {
