@@ -25,6 +25,7 @@ pipeline {
         // Add the Git checkout stage here
         stage('Checkout') {
             steps {
+                deleteDir()
                 checkout scm
             }
         }
