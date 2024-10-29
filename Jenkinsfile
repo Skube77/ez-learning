@@ -83,7 +83,6 @@ pipeline {
             steps {
                 sh '''
                     docker login -u "acilmajed" -p "Skube@177"
-                    docker rmi acilmajed/ez-learning-app || true
                     docker build --no-cache -t acilmajed/ez-learning-app:latest .
                     docker push acilmajed/ez-learning-app:latest
                 '''
