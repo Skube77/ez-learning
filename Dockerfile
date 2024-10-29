@@ -2,7 +2,7 @@
 FROM maven:3.8.6-openjdk-11 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -e
 
 # Étape 2 : Exécuter l'application dans un conteneur léger
 FROM openjdk:17-jdk-slim
