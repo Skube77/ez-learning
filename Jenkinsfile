@@ -47,14 +47,11 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-
-        stage('List Target Directory') {
+        stage('Build') {
             steps {
-                // List the contents of the target directory to verify the .jar file
-                sh 'ls -l target/'
+                sh "mvn clean package -DskipTests -e"
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQubePFE') {
@@ -65,12 +62,6 @@ pipeline {
                         -Dsonar.login=$SONAR_LOGIN
                     '''
                 }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh "mvn clean package -DskipTests -e"
             }
         }
 
