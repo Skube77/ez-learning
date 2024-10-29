@@ -80,10 +80,6 @@ pipeline {
             }
         }
         stage('Prepare New Docker image') {
-                when {
-                branch 'develop'
-            }
-
             steps {
                 sh '''
                     docker login -u "acilmajed" -p "Skube@177"
