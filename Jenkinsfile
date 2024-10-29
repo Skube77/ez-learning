@@ -83,8 +83,8 @@ pipeline {
             steps {
                 sh '''
                     docker login -u "acilmajed" -p "Skube@177"
-                    docker build --no-cache -t acilmajed/ez-learning-app:latest --load .
-                    docker push acilmajed/ez-learning-app:latest --push
+                    docker build --no-cache -t acilmajed/ez-learning-app:latest --push .
+
                     
                 '''
             }
