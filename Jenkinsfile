@@ -15,8 +15,6 @@ pipeline {
         NEXUS_PASS = 'admin123'
         RELEASE_REPO = 'learning'
         CENTRAL_REPO = 'ezrelease'
-        NEXUSIP = '10.217.1.34'
-        NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
     }
@@ -65,7 +63,7 @@ pipeline {
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
                     protocol: 'http',
-                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                    nexusUrl: "https://nexus-pfe.apps-crc.testing",
                     groupId: 'learning',
                     version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
                     repository: "${RELEASE_REPO}",
