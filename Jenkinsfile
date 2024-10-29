@@ -90,6 +90,11 @@ pipeline {
             }
         }
     }
+        stage('Scan Docker Image with Trivy') {
+            steps {
+                sh 'trivy image acilmajed/ez-learning-app:latest'
+            }
+        }
   post {
         always {
             script {
