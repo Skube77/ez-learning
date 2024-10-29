@@ -30,11 +30,6 @@ pipeline {
             }
         }
 
-        stage('Permissions') {
-            steps {
-                sh 'chmod 775 Dockerfile Jenkinsfile LICENSE README.md doc mvnw mvnw.cmd pom.xml src'
-            }
-        }
 
         stage('Validate') {
             steps {
