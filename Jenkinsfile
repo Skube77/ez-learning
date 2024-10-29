@@ -52,7 +52,7 @@ pipeline {
                 withSonarQubeEnv('SonarQubePFE') {
                     sh '''
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-                        -Dsonar.projectKey=my_project_key \
+                        -Dsonar.projectKey=SonarQubePFE\
                         -Dsonar.host.url=$SONAR_HOST_URL \
                         -Dsonar.login=$SONAR_LOGIN
                     '''
