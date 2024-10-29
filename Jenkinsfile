@@ -13,6 +13,8 @@ pipeline {
         MAVEN_SETTINGS = 'settings.xml'  // Path to custom Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
         NEXUS_PASS = 'admin123'
+        NEXUSIP = '10.217.1.34'
+        NEXUSPORT = '8081'
         RELEASE_REPO = 'learning'
         CENTRAL_REPO = 'ezrelease'
         NEXUS_GRP_REPO = 'leargroupe'
@@ -63,7 +65,7 @@ pipeline {
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
                     protocol: 'http',
-                    nexusUrl: "https://nexus-pfe.apps-crc.testing",
+                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
                     groupId: 'learning',
                     version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
                     repository: "${RELEASE_REPO}",
