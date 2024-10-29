@@ -22,14 +22,6 @@ pipeline {
     }
 
     stages {
-        // Add the Git checkout stage here
-        stage('Checkout') {
-            steps {
-                deleteDir()
-                checkout scm
-            }
-        }
-
 
         stage('Validate') {
             steps {
@@ -42,11 +34,13 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+
         stage('Build') {
             steps {
                 sh "mvn clean package -DskipTests -e"
             }
         }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQubePFE') {
@@ -79,23 +73,25 @@ pipeline {
                 )
             }
         }
+
         stage('Prepare New Docker image') {
             steps {
                 sh '''
                     docker login -u "acilmajed" -p "Skube@177"
                     docker build --no-cache -t acilmajed/ez-learning-app:latest --push .
-
-                    
                 '''
             }
         }
-    }
+
+        // Move the Trivy scan stage here inside the stages block
         stage('Scan Docker Image with Trivy') {
             steps {
                 sh 'trivy image acilmajed/ez-learning-app:latest'
             }
         }
-  post {
+    }
+
+    post {
         always {
             script {
                 try {
