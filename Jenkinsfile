@@ -20,7 +20,7 @@ pipeline {
         NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
         OPENSHIFT_API = 'https://api.crc.testing:6443'  // OpenShift API for CRC cluster
-        OPENSHIFT_PROJECT = 'ez-learning-git'  // OpenShift project where the deployment resides
+        OPENSHIFT_PROJECT = 'pfe'  // OpenShift project where the deployment resides
     }
 
     stages {
