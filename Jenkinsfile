@@ -19,6 +19,8 @@ pipeline {
         CENTRAL_REPO = 'ezrelease'
         NEXUS_GRP_REPO = 'leargroupe'
         NEXUS_LOGIN = 'nexus-credentials'
+        OPENSHIFT_API = 'https://api.crc.testing:6443'  // OpenShift API for CRC cluster
+        OPENSHIFT_PROJECT = 'ez-learning-git'  // OpenShift project where the deployment resides
     }
 
     stages {
@@ -46,7 +48,7 @@ pipeline {
                 withSonarQubeEnv('SonarQubePFE') {
                     sh '''
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-                        -Dsonar.projectKey=SonarQubePFE\
+                        -Dsonar.projectKey=SonarQubePFE \
                         -Dsonar.host.url=$SONAR_HOST_URL \
                         -Dsonar.login=$SONAR_LOGIN
                     '''
@@ -83,10 +85,32 @@ pipeline {
             }
         }
 
-        // Move the Trivy scan stage here inside the stages block
         stage('Scan Docker Image with Trivy') {
             steps {
                 sh 'trivy image acilmajed/ez-learning-app:latest'
+            }
+        }
+
+        // New stage for deploying the image to OpenShift
+        stage('Deploy to OpenShift') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'openshift-credentials', usernameVariable: 'OC_USER', passwordVariable: 'OC_PASS')]) {
+                    script {
+                        sh '''
+                            echo "Logging in to OpenShift..."
+                            oc login $OPENSHIFT_API -u $OC_USER -p $OC_PASS --insecure-skip-tls-verify=true
+
+                            echo "Switching to project $OPENSHIFT_PROJECT..."
+                            oc project $OPENSHIFT_PROJECT
+
+                            echo "Deploying new image to OpenShift..."
+                            oc set image deployment/ez-learning-git ez-learning-app=acilmajed/ez-learning-app:latest
+
+                            echo "Checking deployment status..."
+                            oc rollout status deployment/ez-learning-git
+                        '''
+                    }
+                }
             }
         }
     }
