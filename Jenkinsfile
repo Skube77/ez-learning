@@ -104,7 +104,7 @@ pipeline {
                             oc project $OPENSHIFT_PROJECT
 
                             echo "Deploying new image to OpenShift..."
-                            oc set image deployment/ez-learning-git ez-learning-app=acilmajed/ez-learning-app:latest
+                            oc set image deployment/ez-learning-git ez-learning-git=acilmajed/ez-learning-app:latest
 
                             echo "Checking deployment status..."
                             oc rollout status deployment/ez-learning-git
