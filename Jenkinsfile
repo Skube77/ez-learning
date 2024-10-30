@@ -80,7 +80,7 @@ pipeline {
             steps {
                 sh '''
                     docker login -u "acilmajed" -p "Skube@177"
-                    docker build --no-cache -t acilmajed/ez-learning-app:latest --push .
+                    docker build -t acilmajed/ez-learning-app:latest --push .
                 '''
             }
         }
