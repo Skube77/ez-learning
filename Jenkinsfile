@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdkaaa'         // JDK 17 installed via Jenkins
+        jdk 'jdkaaa'         // JDK 17 installé via Jenkins
         maven 'aaaa'         // Maven 3.8.6
     }
 
@@ -78,10 +78,18 @@ pipeline {
 
         stage('Prepare New Docker image') {
             steps {
-                sh '''
-                    docker login -u "acilmajed" -p "Skube@177"
-                    docker build -t acilmajed/ez-learning-app:latest --push .
-                '''
+                script {
+                    sh '''
+                        echo "Logging into Docker registry..."
+                        docker login -u "acilmajed" -p "Skube@177"
+
+                        echo "Building Docker image..."
+                        docker build --cache-from acilmajed/ez-learning-app:latest -t acilmajed/ez-learning-app:latest .
+
+                        echo "Pushing Docker image..."
+                        docker push acilmajed/ez-learning-app:latest
+                    '''
+                }
             }
         }
 
@@ -91,7 +99,7 @@ pipeline {
             }
         }
 
-        // New stage for deploying the image to OpenShift
+        // Stage for deploying the image to OpenShift
         stage('Deploy to OpenShift') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'openshift-credentials', usernameVariable: 'OC_USER', passwordVariable: 'OC_PASS')]) {
