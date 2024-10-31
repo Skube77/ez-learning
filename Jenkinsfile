@@ -87,7 +87,7 @@ pipeline {
                     docker login -u "acilmajed" -p "Skube@177"
                     
                     echo "Building Docker image..."
-                    docker build -t acilmajed/ez-learning-app:latest --push .
+                    docker buildx build --cache-from=type=registry,ref=acilmajed/ez-learning-app:latest --cache-to=type=inline --push -t acilmajed/ez-learning-app:latest .
                 '''
             }
         }
@@ -102,7 +102,7 @@ pipeline {
                         export TRIVY_PASSWORD="$GITHUB_TOKEN"
 
                         echo "Running Trivy scan with cache..."
-                        trivy image --cache-dir /tmp/trivy-cache --format json -o trivy-report.json acilmajed/ez-learning-app:latest
+                        trivy image --cache-dir /tmp/trivy-cache --timeout 20m --format json -o trivy-report.json acilmajed/ez-learning-app:latest
                     '''
                 }
                 archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
