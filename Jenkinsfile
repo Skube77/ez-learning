@@ -93,10 +93,20 @@ pipeline {
             }
         }
 
-        // Scan de l'image Docker avec Trivy pour vérifier les vulnérabilités
+        // Scan de sécurité avec Trivy
         stage('Scan Docker Image with Trivy') {
             steps {
-                sh 'trivy image acilmajed/ez-learning-app:latest'
+                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        export TRIVY_AUTH_URL="ghcr.io"
+                        export TRIVY_USERNAME="$GITHUB_USER"
+                        export TRIVY_PASSWORD="$GITHUB_TOKEN"
+
+                        echo "Running Trivy scan..."
+                        trivy image --format json -o trivy-report.json acilmajed/ez-learning-app:latest
+                    '''
+                }
+                archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
             }
         }
     }
