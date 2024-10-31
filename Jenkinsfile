@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdkaaa'         // JDK 17 installé via Jenkins
+        jdk 'jdkaaa'         // JDK 17 installed via Jenkins
         maven 'aaaa'         // Maven 3.8.6
     }
 
     environment {
         MAVEN_OPTS = "-Dmaven.repo.local=$WORKSPACE/.m2/repository -Dsonar.userHome=$WORKSPACE/.sonar"
         SONAR_HOST_URL = 'http://sonarqube-pfe.apps-crc.testing'
-        SONAR_LOGIN = credentials('sonar-token')  // Jeton d'accès SonarQube stocké dans Jenkins
-        MAVEN_SETTINGS = 'settings.xml'  // Chemin vers le fichier Maven settings.xml avec les identifiants Nexus
+        SONAR_LOGIN = credentials('sonar-token')  // SonarQube token stored in Jenkins
+        MAVEN_SETTINGS = 'settings.xml'  // Path to the Maven settings.xml with Nexus credentials
         NEXUS_USER = 'admin'
         NEXUS_PASS = 'admin123'
         NEXUSIP = '10.217.1.34'
@@ -18,33 +18,33 @@ pipeline {
         RELEASE_REPO = 'learning'
         CENTRAL_REPO = 'ezrelease'
         NEXUS_GRP_REPO = 'leargroupe'
-        NEXUS_LOGIN = 'nexus-credentials'  // Credentials Nexus
+        NEXUS_LOGIN = 'nexus-credentials'  // Nexus credentials
     }
 
     stages {
 
-        // Validation du projet Maven
+        // Validate Maven project
         stage('Validate') {
             steps {
                 sh "mvn validate"
             }
         }
 
-        // Nettoyage et construction
+        // Clean and Build
         stage('Clean and Build') {
             steps {
                 sh 'mvn clean install'
             }
         }
 
-        // Compilation sans exécuter les tests
+        // Build without running tests
         stage('Build') {
             steps {
                 sh "mvn clean package -DskipTests -e"
             }
         }
 
-        // Analyse de code avec SonarQube
+        // Code analysis with SonarQube
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQubePFE') {
@@ -58,7 +58,7 @@ pipeline {
             }
         }
 
-        // Upload de l'artefact sur Nexus
+        // Upload artifact to Nexus
         stage('UploadArtifact') {
             steps {
                 nexusArtifactUploader(
@@ -79,7 +79,7 @@ pipeline {
             }
         }
 
-        // Construction de l'image Docker et publication sur Docker Hub
+        // Build Docker image and push to Docker Hub
         stage('Prepare New Docker image') {
             steps {
                 sh '''
@@ -88,12 +88,11 @@ pipeline {
                     
                     echo "Building Docker image..."
                     docker build -t acilmajed/ez-learning-app:latest --push .
-                
-                   '''
+                '''
             }
         }
 
-        // Scan de sécurité avec Trivy
+        // Security scan with Trivy, using cache
         stage('Scan Docker Image with Trivy') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
@@ -102,8 +101,8 @@ pipeline {
                         export TRIVY_USERNAME="$GITHUB_USER"
                         export TRIVY_PASSWORD="$GITHUB_TOKEN"
 
-                        echo "Running Trivy scan..."
-                        trivy image --format json -o trivy-report.json acilmajed/ez-learning-app:latest
+                        echo "Running Trivy scan with cache..."
+                        trivy image --cache-dir /tmp/trivy-cache --format json -o trivy-report.json acilmajed/ez-learning-app:latest
                     '''
                 }
                 archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
@@ -111,7 +110,7 @@ pipeline {
         }
     }
 
-    // Section post pour la vérification du Quality Gate de SonarQube après l'exécution du pipeline
+    // Post section to check SonarQube Quality Gate after pipeline execution
     post {
         always {
             script {
