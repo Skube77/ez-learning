@@ -84,7 +84,7 @@ pipeline {
                         docker login -u "acilmajed" -p "Skube@177"
 
                         echo "Building Docker image..."
-                        docker build --cache-from acilmajed/ez-learning-app:latest -t acilmajed/ez-learning-app:latest .
+                        docker build --no-cache -t acilmajed/ez-learning-app:latest --push .
 
                         echo "Pushing Docker image..."
                         docker push acilmajed/ez-learning-app:latest
