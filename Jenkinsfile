@@ -88,10 +88,8 @@ pipeline {
                     
                     echo "Building Docker image..."
                     docker build -t acilmajed/ez-learning-app:latest --push .
-                    
-                    echo "Pushing Docker image..."
-                    docker push acilmajed/ez-learning-app:latest
-                '''
+                
+                   '''
             }
         }
 
