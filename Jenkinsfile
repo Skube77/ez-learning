@@ -87,28 +87,20 @@ pipeline {
                     docker login -u "acilmajed" -p "Skube@177"
                     
                     echo "Building Docker image..."
-                    docker build -t acilmajed/ez-learning-app:latest .
-                    docker push acilmajed/ez-learning-app:latest
+                     docker build --no-cache -t acilmajed/ez-learning-app:latest --push .
                 '''
             }
         }
 
-        // Security scan with Trivy, using cache
-        stage('Scan Docker Image with Trivy') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                        export TRIVY_AUTH_URL="ghcr.io"
-                        export TRIVY_USERNAME="$GITHUB_USER"
-                        export TRIVY_PASSWORD="$GITHUB_TOKEN"
-
-                        echo "Running Trivy scan with cache..."
-                        trivy image --cache-dir /tmp/trivy-cache --timeout 20m --format json -o trivy-report.json acilmajed/ez-learning-app:latest
-                    '''
-                }
-                archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
-            }
-        }
+        // Security scan with Trivy
+stage('Scan Docker Image with Trivy') {
+    steps {
+        sh '''
+            echo "Running Trivy scan on Docker image..."
+            trivy image acilmajed/ez-learning-app:latest
+        '''
+    }
+}
     }
 
     // Post section to check SonarQube Quality Gate after pipeline execution
