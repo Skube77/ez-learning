@@ -87,7 +87,8 @@ pipeline {
                     docker login -u "acilmajed" -p "Skube@177"
                     
                     echo "Building Docker image..."
-                    docker buildx build --cache-from=type=registry,ref=acilmajed/ez-learning-app:latest --cache-to=type=inline --push -t acilmajed/ez-learning-app:latest .
+                    docker build -t acilmajed/ez-learning-app:latest .
+                    docker push acilmajed/ez-learning-app:latest
                 '''
             }
         }
