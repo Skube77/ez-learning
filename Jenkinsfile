@@ -87,7 +87,7 @@ pipeline {
                     docker login -u "acilmajed" -p "Skube@177"
                     
                     echo "Building Docker image..."
-                     docker build --cache -t acilmajed/ez-learning-app:latest --push .
+                     docker build -cache -t acilmajed/ez-learning-app:latest --push .
                 '''
             }
         }
