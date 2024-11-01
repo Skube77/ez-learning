@@ -97,7 +97,7 @@ stage('Scan Docker Image with Trivy') {
     steps {
         sh '''
             echo "Running Trivy scan on Docker image..."
-            trivy image acilmajed/ez-learning-app:latest
+            trivy image --timeout 20m acilmajed/ez-learning-app:latest
         '''
     }
 }
