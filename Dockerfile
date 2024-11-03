@@ -1,14 +1,19 @@
-# Use OpenJDK 17 as the base image
+# Utiliser OpenJDK 17 comme image de base
 FROM openjdk:17-jdk-slim
 
-# Set the working directory in the container
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copy the JAR file from the host machine to the container
+# Copier le fichier JAR de l'application depuis l'hôte vers le conteneur
 COPY target/platform-0.0.1-SNAPSHOT.jar /app/platform-0.0.1-SNAPSHOT.jar
 
-# Expose the application port
-EXPOSE 8080
+# Copier le fichier JMX Exporter JAR et le fichier de configuration dans le conteneur
+COPY jmx_prometheus_javaagent-1.0.1.jar /app/jmx_prometheus_javaagent.jar
+COPY jmx_exporter_config.yml /app/jmx_exporter_config.yml
 
-# Define the command to run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/platform-0.0.1-SNAPSHOT.jar"]
+# Exposer le port de l'application et le port du JMX Exporter
+EXPOSE 8080
+EXPOSE 9090
+
+# Définir la commande pour exécuter le fichier JAR avec le JMX Exporter comme agent Java
+ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9090:/app/jmx_exporter_config.yml", "-jar", "/app/platform-0.0.1-SNAPSHOT.jar"]
