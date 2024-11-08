@@ -1,5 +1,5 @@
 # Étape 1 : Construire l'application avec Maven
-FROM maven:3.8.6-openjdk-11 AS build
+FROM maven:3.8.6-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
