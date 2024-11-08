@@ -1,10 +1,2 @@
-lowercaseOutputName: true
 rules:
-  - pattern: "java.lang<type=Memory><>HeapMemoryUsage"
-    name: "jvm_memory_usage_bytes"
-    type: GAUGE
-    labels:
-      area: "heap"
-  - pattern: "java.lang<type=Threading><>ThreadCount"
-    name: "jvm_thread_count"
-    type: GAUGE
+  - pattern: ".*"
