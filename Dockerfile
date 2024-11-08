@@ -1,19 +1,17 @@
-# Utiliser OpenJDK 17 comme image de base
-FROM openjdk:17-jdk-slim
-
-# Définir le répertoire de travail dans le conteneur
+# Étape 1 : Construire l'application avec Maven
+FROM maven:3.8.6-openjdk-11 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copier le fichier JAR de l'application depuis l'hôte vers le conteneur
-COPY target/platform-0.0.1-SNAPSHOT.jar /app/platform-0.0.1-SNAPSHOT.jar
 
-# Copier le fichier JMX Exporter JAR et le fichier de configuration dans le conteneur
-COPY jmx_prometheus_javaagent-1.0.1.jar /app/jmx_prometheus_javaagent.jar
-COPY jmx_exporter_config.yml /app/jmx_exporter_config.yml
 
-# Exposer le port de l'application et le port du JMX Exporter
+# Étape 2 : Exécuter l'application dans un conteneur léger
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/jmx_prometheus_javaagent-1.0.1.jar /app/jmx_prometheus_javaagent.jar
+COPY --from=build /app/jmx_exporter_config.yml /app/jmx_exporter_config.yml
 EXPOSE 8080
 EXPOSE 9090
-
-# Définir la commande pour exécuter le fichier JAR avec le JMX Exporter comme agent Java
-ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9090:/app/jmx_exporter_config.yml", "-jar", "/app/platform-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/jmx_prometheus_javaagent.jar=9090:/app/jmx_exporter_config.yml", "-jar", "/app/app.jar"]
